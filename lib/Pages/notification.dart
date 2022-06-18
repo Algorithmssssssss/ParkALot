@@ -1,52 +1,21 @@
-// ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_final_fields, unused_field, unnecessary_new
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:park_alot/Pages/home.dart';
 import 'package:park_alot/Pages/maps.dart';
 import 'package:park_alot/Pages/profile.dart';
 
-import '../util/my_button.dart';
-import 'login_page.dart';
-import 'notification.dart';
-import 'ownerPages/get_parking_data.dart';
+import 'home.dart';
 import 'ownerPages/owner_home.dart';
 
-class searchPage extends StatefulWidget {
-  const searchPage({Key? key}) : super(key: key);
+class notificationPage extends StatefulWidget {
+  const notificationPage({Key? key}) : super(key: key);
 
   @override
-  State<searchPage> createState() => _searchPageState();
+  State<notificationPage> createState() => _notificationPageState();
 }
 
-class _searchPageState extends State<searchPage> {
-  final user = FirebaseAuth.instance.currentUser;
-  String namesearch = "";
-  // document IDs
-  List<String> docParkingIDs = [];
-  CollectionReference usersDatabase =
-      FirebaseFirestore.instance.collection('users');
-
-  //get docIDs
-
-  Future<void> getDocID() async {
-    await FirebaseFirestore.instance.collection('parkings').get().then(
-          // ignore: avoid_function_literals_in_foreach_calls
-          (snapshot) => snapshot.docs.forEach(
-            (document) {
-              print(user?.uid.toString());
-              print(document.reference);
-              docParkingIDs.add(document.reference.id);
-            },
-          ),
-        );
-  }
-
+class _notificationPageState extends State<notificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,7 +83,7 @@ class _searchPageState extends State<searchPage> {
                           height: 50,
                           child: FittedBox(
                             child: Text(
-                              'Car Parks',
+                              'Notification',
                               style: GoogleFonts.firaSans(
                                   fontSize: 40,
                                   fontWeight: FontWeight.w500,
@@ -124,60 +93,17 @@ class _searchPageState extends State<searchPage> {
                     ],
                   ),
                   Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(0, 100, 99, 99),
-                      shape: BoxShape.circle,
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => notificationPage()),
-                        );
-                      },
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(0, 100, 99, 99),
+                        shape: BoxShape.circle,
+                      ),
                       child: Icon(
                         Icons.notifications,
                         color: Color.fromARGB(255, 100, 100, 100),
                         size: 30,
-                      ),
-                    ),
-                  ),
+                      )),
                 ],
-              ),
-            ),
-
-            TextField(
-              decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search), hintText: 'Search...'),
-              onChanged: (val) {
-                setState(
-                  () {
-                    namesearch = val;
-                  },
-                );
-              },
-            ),
-
-            Expanded(
-              child: FutureBuilder(
-                future: getDocID(),
-                builder: (context, snapshot) {
-                  return ListView.builder(
-                    itemCount: docParkingIDs.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          title:
-                              getParkingData(documentId: docParkingIDs[index]),
-                          tileColor: Color.fromARGB(255, 109, 139, 116),
-                        ),
-                      );
-                    },
-                  );
-                },
               ),
             ),
 

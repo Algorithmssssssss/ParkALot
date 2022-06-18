@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:park_alot/Pages/maps.dart';
+import 'package:park_alot/Pages/notification.dart';
 import 'package:park_alot/Pages/profile.dart';
 import 'package:park_alot/Pages/search.dart';
 import 'package:park_alot/util/my_button.dart';
@@ -101,16 +102,26 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(0, 100, 99, 99),
-                        shape: BoxShape.circle,
-                      ),
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(0, 100, 99, 99),
+                      shape: BoxShape.circle,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => notificationPage()),
+                        );
+                      },
                       child: Icon(
                         Icons.notifications,
                         color: Color.fromARGB(255, 100, 100, 100),
                         size: 30,
-                      )),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -170,13 +181,7 @@ class _HomePageState extends State<HomePage> {
                   //Car
                   Container(
                     child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => navigationPage()),
-                        );
-                      },
+                      onTap: () {},
                       child: MyButton(
                         iconImagePath: 'lib/icons/parking-area.png',
                       ),

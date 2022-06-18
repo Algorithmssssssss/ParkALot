@@ -4,17 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:park_alot/Pages/auth_page.dart';
-import 'package:park_alot/Pages/read_data/get_user_email.dart';
+
 import 'package:park_alot/Pages/read_data/get_user_name.dart';
 import 'package:park_alot/Pages/read_data/get_user_phone.dart';
 import 'package:park_alot/Pages/read_data/update_database.dart';
 import 'package:park_alot/Pages/search.dart';
 import 'package:park_alot/util/main_page.dart';
 
-import '../util/my_button.dart';
 import 'home.dart';
-import 'login_page.dart';
+
 import 'maps.dart';
 import 'ownerPages/owner_home.dart';
 
@@ -46,6 +44,7 @@ class _profilePageState extends State<profilePage> {
             (document) {
               print(user?.uid.toString());
               print(document.reference);
+
               docIDs.add(document.reference.id);
             },
           ),

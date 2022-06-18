@@ -12,6 +12,7 @@ import 'package:park_alot/Pages/search.dart';
 
 import '../util/my_button.dart';
 import 'login_page.dart';
+import 'notification.dart';
 
 class navigationPage extends StatefulWidget {
   const navigationPage({Key? key}) : super(key: key);
@@ -101,16 +102,26 @@ class _navigationPageState extends State<navigationPage> {
                     ],
                   ),
                   Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(0, 100, 99, 99),
-                        shape: BoxShape.circle,
-                      ),
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(0, 100, 99, 99),
+                      shape: BoxShape.circle,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => notificationPage()),
+                        );
+                      },
                       child: Icon(
                         Icons.notifications,
                         color: Color.fromARGB(255, 100, 100, 100),
                         size: 30,
-                      )),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

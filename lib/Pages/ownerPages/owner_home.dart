@@ -12,6 +12,7 @@ import 'package:park_alot/Pages/ownerPages/add_locations.dart';
 import 'package:park_alot/Pages/profile.dart';
 import 'package:park_alot/Pages/search.dart';
 
+import '../notification.dart';
 import 'get_parking_data.dart';
 
 class ownerHomePage extends StatefulWidget {
@@ -93,8 +94,10 @@ class _ownerHomePageState extends State<ownerHomePage> {
       ),
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // appbar
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
@@ -102,6 +105,7 @@ class _ownerHomePageState extends State<ownerHomePage> {
                 // ignore: prefer_const_literals_to_create_immutables
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     // ignore: prefer_const_literals_to_create_immutables
                     children: [
                       Container(
@@ -119,16 +123,26 @@ class _ownerHomePageState extends State<ownerHomePage> {
                     ],
                   ),
                   Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(0, 100, 99, 99),
-                        shape: BoxShape.circle,
-                      ),
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(0, 100, 99, 99),
+                      shape: BoxShape.circle,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => notificationPage()),
+                        );
+                      },
                       child: Icon(
                         Icons.notifications,
                         color: Color.fromARGB(255, 100, 100, 100),
                         size: 30,
-                      )),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

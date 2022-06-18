@@ -4,6 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'package:park_alot/signupdb.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -18,12 +23,15 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final user = FirebaseAuth.instance.currentUser;
+  final _form = GlobalKey<FormState>();
   // text controller
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordCheckController = TextEditingController();
   final _phoneCheckController = TextEditingController();
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference ref = FirebaseDatabase.instance.ref().child('users');
 
   @override
   void dispose() {
@@ -48,6 +56,9 @@ class _RegisterPageState extends State<RegisterPage> {
         _emailController.text.trim(),
         _phoneCheckController.text.trim(),
       );
+
+      // add user to rtdb
+      addUserRtdb();
     } else {
       showDialog(
           context: context,
@@ -63,10 +74,18 @@ class _RegisterPageState extends State<RegisterPage> {
       String username, String email, String phonenumber) async {
     print('Username:');
     print(email);
+    // "123"
     await FirebaseFirestore.instance.collection('users').doc(email).set({
       'username': username,
       'email': email,
       'phonenumber': phonenumber,
+    });
+  }
+
+  //addUserRtdb
+  addUserRtdb() {
+    ref.push().child('test').set({
+      'username': _usernameController.text.trim(),
     });
   }
 
@@ -79,8 +98,36 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  void writeData() async {
+    _form.currentState?.save();
+
+    // Please replace the Database URL
+    // which we will get in “Add Realtime
+    // Database” step with DatabaseURL
+    var url =
+        "https://park-a-lot-25cdb-default-rtdb.europe-west1.firebasedatabase.app/" +
+            "names.json";
+
+    // (Do not remove “data.json”,keep it as it is)
+
+    final response = await http.post(
+      Uri.parse(url),
+      body: json.encode({"users": "test"}),
+    );
+  }
+
+  void addrtdb(rtdb RTDB) {
+    ref.push().set(RTDB.toJson());
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(ref.key);
+    ref.push().set({
+      'users': "Test",
+    }).asStream();
+    addrtdb;
+    addUserRtdb();
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 198, 220, 228),
       body: SafeArea(
