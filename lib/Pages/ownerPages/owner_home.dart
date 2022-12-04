@@ -26,18 +26,6 @@ class _ownerHomePageState extends State<ownerHomePage> {
   final user = FirebaseAuth.instance.currentUser;
   List<String> docParkingIDs = [];
 
-  Future<void> getDocID() async {
-    await FirebaseFirestore.instance.collection('parkings').get().then(
-          // ignore: avoid_function_literals_in_foreach_calls
-          (snapshot) => snapshot.docs.forEach(
-            (document) {
-              print(user?.uid.toString());
-              print(document.reference);
-              docParkingIDs.add(document.reference.id);
-            },
-          ),
-        );
-  }
 
   @override
   Widget build(BuildContext context) {
