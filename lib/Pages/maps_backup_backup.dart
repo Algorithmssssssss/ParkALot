@@ -1,31 +1,28 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_new
+// ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_final_fields, unused_field, unnecessary_new
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
-
-import 'package:park_alot/Pages/maps.dart';
-import 'package:park_alot/Pages/notification.dart';
+import 'package:park_alot/Pages/home.dart';
+import 'package:park_alot/Pages/ownerPages/owner_home.dart';
 import 'package:park_alot/Pages/profile.dart';
 import 'package:park_alot/Pages/search.dart';
-import 'package:park_alot/util/my_button.dart';
 
-import 'package:google_fonts/google_fonts.dart';
-
+import '../util/my_button.dart';
 import 'login_page.dart';
-import 'ownerPages/owner_home.dart';
+import 'notification.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class navigationPage extends StatefulWidget {
+  const navigationPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<navigationPage> createState() => _navigationPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  FirebaseAuth auth = FirebaseAuth.instance;
+class _navigationPageState extends State<navigationPage> {
+  final user = FirebaseAuth.instance.currentUser;
   List<Marker> markers = [];
 
   @override
@@ -46,16 +43,16 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomAppBar(
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
           IconButton(
-            onPressed: () {},
-            icon: Image.asset('lib/icons/home.png'),
-          ),
-          IconButton(
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => navigationPage()),
+                MaterialPageRoute(builder: (context) => HomePage()),
               );
             },
+            icon: Image.asset('lib/icons/home.png'),
+          ),
+          IconButton(
+            onPressed: () {},
             icon: Image.asset('lib/icons/navigator.png'),
           ),
           IconButton(
@@ -95,7 +92,7 @@ class _HomePageState extends State<HomePage> {
                           height: 50,
                           child: FittedBox(
                             child: Text(
-                              'ParkALot',
+                              'Navigation',
                               style: GoogleFonts.firaSans(
                                   fontSize: 40,
                                   fontWeight: FontWeight.w500,
@@ -115,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ownerHomePage()),
+                              builder: (context) => notificationPage()),
                         );
                       },
                       child: Icon(
@@ -132,18 +129,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: 1,
             ),
-
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(),
-            ),
-
-            SizedBox(
-              height: 1,
-            ),
-
-            Container(
-              height: 600,
+            Flexible(
               child: FlutterMap(
                 options: MapOptions(
                   center: new LatLng(54.8985, 23.9036),
@@ -165,14 +151,10 @@ class _HomePageState extends State<HomePage> {
                           builder: (context) => new Container(
                                 child: IconButton(
                                   icon: Icon(Icons.location_on),
-                                  color: Color.fromARGB(255, 220, 53, 53),
+                                  color: Colors.cyanAccent,
                                   iconSize: 45.0,
                                   onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => searchPage()),
-                                    );
+                                    print('Marker tapped');
                                   },
                                 ),
                               ))
@@ -180,49 +162,6 @@ class _HomePageState extends State<HomePage> {
                   )
                 ],
               ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                // ignore: prefer_const_literals_to_create_immutables
-                children: [
-                  //Car
-                  Container(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => navigationPage()),
-                        );
-                      },
-                      child: MyButton(
-                        iconImagePath: 'lib/icons/parking-area.png',
-                      ),
-                    ),
-                  ),
-                  // EV
-                  Container(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => navigationPage()),
-                        );
-                      },
-                      child: MyButton(
-                        iconImagePath: 'lib/icons/electric-car.png',
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 10,
             ),
           ],
         ),

@@ -41,27 +41,14 @@ class _addLocationPageState extends State<addLocationPage> {
     super.dispose();
   }
 
-  appendSearchIndex(String placeName) {
-    String placeName = _nameController.text.trim();
-    List<String> listnumber = placeName.split("");
-    List<String> output = []; // int -> String
-    for (int i = 0; i < listnumber.length; i++) {
-      if (i != listnumber.length - 1) {
-        output.add(listnumber[i]); //
-      }
-      List<String> temp = [listnumber[i]];
-      for (int j = i + 1; j < listnumber.length; j++) {
-        temp.add(listnumber[j]); //
-        output.add((temp.join()));
-      }
+  setSearchParam(String caseNumber) {
+    List<String> caseSearchList = [];
+    String temp = "";
+    for (int i = 0; i < caseNumber.length; i++) {
+      temp = temp + caseNumber[i];
+      caseSearchList.add(temp);
     }
-    print(output.toString());
-    for (int i = 0; i < output.length; i++) {
-      searchIndex.add({
-        "${[i]}": output[i]
-      });
-    }
-    return output;
+    return caseSearchList;
   }
 
   Future addLocation() async {
@@ -80,7 +67,7 @@ class _addLocationPageState extends State<addLocationPage> {
   Future addLocationDetials(
       String name, String location, int type, String owner, int spots) async {
     print(name);
-    appendSearchIndex(name);
+    setSearchParam(name);
     await FirebaseFirestore.instance.collection('parkings').doc(name).set(
       {
         'name': name,
@@ -88,7 +75,7 @@ class _addLocationPageState extends State<addLocationPage> {
         'type': type,
         'ownerid': owner,
         'spots': spots,
-        'searchIndex': appendSearchIndex(name),
+        'searchIndex': setSearchParam(name),
       },
     );
   }

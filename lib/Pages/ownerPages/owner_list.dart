@@ -1,10 +1,9 @@
-// ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_final_fields, unused_field, unnecessary_new
+// ignore_for_file: prefer_const_constructors
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:park_alot/Pages/home.dart';
@@ -13,43 +12,32 @@ import 'package:park_alot/Pages/ownerPages/add_locations.dart';
 import 'package:park_alot/Pages/profile.dart';
 import 'package:park_alot/Pages/search.dart';
 
-import '../../util/my_button.dart';
 import '../notification.dart';
 import 'get_parking_data.dart';
-import 'owner_list.dart';
 
-class ownerHomePage extends StatefulWidget {
-  const ownerHomePage({Key? key}) : super(key: key);
+class parkingList extends StatefulWidget {
+  const parkingList({Key? key}) : super(key: key);
 
   @override
-  State<ownerHomePage> createState() => _ownerHomePageState();
+  State<parkingList> createState() => _parkingListState();
 }
 
-class _ownerHomePageState extends State<ownerHomePage> {
+class _parkingListState extends State<parkingList> {
   final user = FirebaseAuth.instance.currentUser;
   List<String> docParkingIDs = [];
-  final controller = mapController.customLayer(
-    initMapWithUserPosition: false,
-    initPosition: LatLng(
-      47.4358055,
-      8.4737324,
-    ),
-    customTile: CustomTile(
-      sourceName: "opentopomap",
-      tileExtension: ".png",
-      minZoomLevel: 2,
-      maxZoomLevel: 19,
-      urlsServers: [
-        TileURLs(
-          url: "https://tile.opentopomap.org/",
-          subdomains: [],
-        )
-      ],
-      tileSize: 256,
-    ),
-  );
 
-  static get mapController => null;
+  Future<void> getDocID() async {
+    await FirebaseFirestore.instance.collection('parkings').get().then(
+          // ignore: avoid_function_literals_in_foreach_calls
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              print(user?.uid.toString());
+              print(document.reference);
+              docParkingIDs.add(document.reference.id);
+            },
+          ),
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +62,7 @@ class _ownerHomePageState extends State<ownerHomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ownerHomePage()),
+                  MaterialPageRoute(builder: (context) => HomePage()),
                 );
               },
               icon: Image.asset('lib/icons/home.png'),
@@ -83,7 +71,7 @@ class _ownerHomePageState extends State<ownerHomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => parkingList()),
+                  MaterialPageRoute(builder: (context) => searchPage()),
                 );
               },
               icon: Image.asset('lib/icons/searching.png'),
@@ -111,7 +99,7 @@ class _ownerHomePageState extends State<ownerHomePage> {
             // appbar
 
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 // ignore: prefer_const_literals_to_create_immutables
@@ -124,7 +112,7 @@ class _ownerHomePageState extends State<ownerHomePage> {
                         height: 50,
                         child: FittedBox(
                           child: Text(
-                            'ParkALot Owner',
+                            'Add Parking',
                             style: GoogleFonts.firaSans(
                                 fontSize: 40,
                                 fontWeight: FontWeight.w500,
@@ -159,96 +147,28 @@ class _ownerHomePageState extends State<ownerHomePage> {
             ),
 
             SizedBox(
-              height: 10,
-            ),
-
-            Flexible(
-              child: OSMFlutter(
-                controller: mapController,
-                trackMyPosition: false,
-                initZoom: 12,
-                minZoomLevel: 8,
-                maxZoomLevel: 14,
-                stepZoom: 1.0,
-                userLocationMarker: UserLocationMaker(
-                  personMarker: MarkerIcon(
-                    icon: Icon(
-                      Icons.location_history_rounded,
-                      color: Colors.red,
-                      size: 48,
-                    ),
-                  ),
-                  directionArrowMarker: MarkerIcon(
-                    icon: Icon(
-                      Icons.double_arrow,
-                      size: 48,
-                    ),
-                  ),
-                ),
-                roadConfiguration: RoadConfiguration(
-                  startIcon: MarkerIcon(
-                    icon: Icon(
-                      Icons.person,
-                      size: 64,
-                      color: Colors.brown,
-                    ),
-                  ),
-                  roadColor: Colors.yellowAccent,
-                ),
-                markerOption: MarkerOption(
-                  defaultMarker: MarkerIcon(
-                    icon: Icon(
-                      Icons.person_pin_circle,
-                      color: Colors.blue,
-                      size: 56,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                // ignore: prefer_const_literals_to_create_immutables
-                children: [
-                  //Car
-                  Container(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => navigationPage()),
-                        );
-                      },
-                      child: MyButton(
-                        iconImagePath: 'lib/icons/parkingAdd.png',
-                      ),
-                    ),
-                  ),
-                  // EV
-                  Container(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => navigationPage()),
-                        );
-                      },
-                      child: MyButton(
-                        iconImagePath: 'lib/icons/evAdd.png',
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-
-            SizedBox(
               height: 1,
+            ),
+
+            Expanded(
+              child: FutureBuilder(
+                future: getDocID(),
+                builder: (context, snapshot) {
+                  return ListView.builder(
+                    itemCount: docParkingIDs.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title:
+                              getParkingData(documentId: docParkingIDs[index]),
+                          tileColor: Color.fromARGB(255, 109, 139, 116),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),

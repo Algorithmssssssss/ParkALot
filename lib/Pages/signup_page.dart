@@ -45,10 +45,23 @@ class _RegisterPageState extends State<RegisterPage> {
   Future signUp() async {
     if (passwordConfirmed()) {
       // create user
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+      } on FirebaseAuthException catch (e) {
+        print(e);
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(e.message.toString()),
+            );
+          },
+        );
+      }
 
       // add user details
       addUserDetials(
@@ -75,11 +88,13 @@ class _RegisterPageState extends State<RegisterPage> {
     print('Username:');
     print(email);
     // "123"
-    await FirebaseFirestore.instance.collection('users').doc(email).set({
-      'username': username,
-      'email': email,
-      'phonenumber': phonenumber,
-    });
+    await FirebaseFirestore.instance.collection('users').doc(email).set(
+      {
+        'username': username,
+        'email': email,
+        'phonenumber': phonenumber,
+      },
+    );
   }
 
   //addUserRtdb

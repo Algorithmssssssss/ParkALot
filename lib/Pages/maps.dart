@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:park_alot/Pages/home.dart';
@@ -24,6 +25,8 @@ class navigationPage extends StatefulWidget {
 class _navigationPageState extends State<navigationPage> {
   final user = FirebaseAuth.instance.currentUser;
   List<Marker> markers = [];
+
+  var mapController;
 
   @override
   Widget build(BuildContext context) {
@@ -145,21 +148,36 @@ class _navigationPageState extends State<navigationPage> {
                   MarkerLayerOptions(
                     markers: [
                       new Marker(
-                          width: 45.0,
-                          height: 45.0,
-                          point: new LatLng(54.8985, 23.9036),
-                          builder: (context) => new Container(
-                                child: IconButton(
-                                  icon: Icon(Icons.location_on),
-                                  color: Colors.cyanAccent,
-                                  iconSize: 45.0,
-                                  onPressed: () {
-                                    print('Marker tapped');
-                                  },
-                                ),
-                              ))
+                        width: 45.0,
+                        height: 45.0,
+                        point: new LatLng(54.8985, 23.9036),
+                        builder: (context) => new Container(
+                          child: IconButton(
+                            icon: Icon(Icons.location_on),
+                            color: Color.fromARGB(255, 220, 53, 53),
+                            iconSize: 45.0,
+                            onPressed: () {
+                              print('Marker tapped');
+                            },
+                          ),
+                        ),
+                      ),
                     ],
-                  )
+                  ),
+                  PolylineLayerOptions(
+                    polylines: [
+                      Polyline(
+                        points: [
+                          LatLng(51.5, -0.09),
+                          LatLng(51.5, -0.08),
+                          LatLng(51.49, -0.08),
+                          LatLng(51.49, -0.09),
+                        ],
+                        strokeWidth: 4.0,
+                        color: Colors.purple,
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

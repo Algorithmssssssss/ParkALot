@@ -27,6 +27,7 @@ class searchPage extends StatefulWidget {
 class _searchPageState extends State<searchPage> {
   final user = FirebaseAuth.instance.currentUser;
   String namesearch = "";
+  late Stream streamQuery;
   // document IDs
   List<String> docParkingIDs = [];
   CollectionReference usersDatabase =
@@ -152,11 +153,12 @@ class _searchPageState extends State<searchPage> {
               decoration: InputDecoration(
                   prefixIcon: Icon(Icons.search), hintText: 'Search...'),
               onChanged: (val) {
-                setState(
-                  () {
-                    namesearch = val;
-                  },
-                );
+                setState(() {
+                  streamQuery = FirebaseFirestore.instance
+                      .collection('parking')
+                      .where('searchIndex', arrayContains: val)
+                      .snapshots();
+                });
               },
             ),
 
