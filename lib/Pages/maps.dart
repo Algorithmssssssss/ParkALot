@@ -44,39 +44,42 @@ class _navigationPageState extends State<navigationPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => HomePage()),
-              );
-            },
-            icon: Image.asset('lib/icons/home.png'),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Image.asset('lib/icons/navigator.png'),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ownerHomePage()),
-              );
-            },
-            icon: Image.asset('lib/icons/credit.png'),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => profilePage()),
-              );
-            },
-            icon: Image.asset('lib/icons/settings.png'),
-          ),
-        ]),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                );
+              },
+              icon: Image.asset('lib/icons/home.png'),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: Image.asset('lib/icons/navigator.png'),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ownerHomePage()),
+                );
+              },
+              icon: Image.asset('lib/icons/credit.png'),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => profilePage()),
+                );
+              },
+              icon: Image.asset('lib/icons/settings.png'),
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -92,16 +95,17 @@ class _navigationPageState extends State<navigationPage> {
                     // ignore: prefer_const_literals_to_create_immutables
                     children: [
                       Container(
-                          height: 50,
-                          child: FittedBox(
-                            child: Text(
-                              'Navigation',
-                              style: GoogleFonts.firaSans(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color.fromARGB(255, 109, 139, 116)),
-                            ),
-                          )),
+                        height: 50,
+                        child: FittedBox(
+                          child: Text(
+                            'Navigation',
+                            style: GoogleFonts.firaSans(
+                                fontSize: 40,
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 109, 139, 116)),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   Container(

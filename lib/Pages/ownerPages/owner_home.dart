@@ -1,24 +1,23 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_final_fields, unused_field, unnecessary_new
-
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+// pages imports
 import 'package:park_alot/Pages/home.dart';
 import 'package:park_alot/Pages/maps.dart';
 import 'package:park_alot/Pages/ownerPages/add_locations.dart';
 import 'package:park_alot/Pages/profile.dart';
 import 'package:park_alot/Pages/search.dart';
-import 'dart:async';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 import '../../util/my_button.dart';
 import '../notification.dart';
 import 'get_parking_data.dart';
 import 'owner_list.dart';
+
+// maps imports
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:map_location_picker/map_location_picker.dart';
 
 class ownerHomePage extends StatefulWidget {
   const ownerHomePage({Key? key}) : super(key: key);
@@ -34,22 +33,35 @@ class _ownerHomePageState extends State<ownerHomePage> {
   late Marker _origin;
   late Marker _destination;
 
-  Marker vegasMarker = Marker(
-    markerId: MarkerId('vegas'),
-    position: LatLng(36.0953103, -115.1992098),
-    infoWindow: InfoWindow(title: 'Las Vegas'),
-  );
-
-  Marker losAngelesMarker = Marker(
-    markerId: MarkerId('losAngeles'),
-    position: LatLng(34.0345471, -118.2643037),
-    infoWindow: InfoWindow(title: 'Los Angeles'),
-  );
+  final List<Marker> _markers = <Marker>[
+    Marker(
+      markerId: MarkerId('1'),
+      position: LatLng(54.898772, 23.902762),
+      infoWindow: InfoWindow(
+        title: 'My House',
+      ),
+    ),
+    Marker(
+      markerId: MarkerId('2'),
+      position: LatLng(54.8985, 23.9036),
+      infoWindow: InfoWindow(title: 'Parking 1'),
+    ),
+  ];
 
   final LatLng _center = const LatLng(54.8985, 23.9036);
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+  }
+
+  Future<Position> getUserCurrentLocation() async {
+    await Geolocator.requestPermission()
+        .then((value) {})
+        .onError((error, stackTrace) async {
+      await Geolocator.requestPermission();
+      print("ERROR" + error.toString());
+    });
+    return await Geolocator.getCurrentPosition();
   }
 
   @override
@@ -164,16 +176,26 @@ class _ownerHomePageState extends State<ownerHomePage> {
             ),
 
             Flexible(
+              child: MapLocationPicker(
+                apiKey: "AIzaSyBJkTw_pgCIMasJPW1FeG3cFfblLyPZ93A",
+                onNext: (GeocodingResult? result) {},
+              ),
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+
+            Flexible(
               child: GoogleMap(
                 onMapCreated: _onMapCreated,
+                myLocationButtonEnabled: true,
+                compassEnabled: true,
                 initialCameraPosition: CameraPosition(
                   target: _center,
                   zoom: 11.0,
                 ),
-                markers: {
-                  vegasMarker,
-                  losAngelesMarker,
-                },
+                markers: Set<Marker>.of(_markers),
                 onLongPress: _addMarker,
               ),
             ),
@@ -229,25 +251,30 @@ class _ownerHomePageState extends State<ownerHomePage> {
 
   void _addMarker(LatLng pos) {
     if (_origin == null || (_origin != null && _destination != null)) {
-      setState(() {
-        _origin = Marker(
-          markerId: MarkerId('origin'),
-          position: pos,
-          infoWindow: InfoWindow(title: 'Origin'),
-          icon:
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        );
-        _destination = null as Marker;
-      });
+      setState(
+        () {
+          _origin = Marker(
+            markerId: MarkerId('origin'),
+            position: pos,
+            infoWindow: InfoWindow(title: 'Origin'),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueGreen),
+          );
+          _destination = null as Marker;
+        },
+      );
     } else {
-      setState(() {
-        _destination = Marker(
-          markerId: MarkerId('destination'),
-          position: pos,
-          infoWindow: InfoWindow(title: 'Destination'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        );
-      });
+      setState(
+        () {
+          _destination = Marker(
+            markerId: MarkerId('destination'),
+            position: pos,
+            infoWindow: InfoWindow(title: 'Destination'),
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          );
+        },
+      );
     }
   }
 }

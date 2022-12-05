@@ -28,8 +28,8 @@ dependencies:
   geolocator: ^9.0.1
   geocoding: ^2.0.4
   flutter_osm_plugin: ^0.41.2
-  open_street_map_search_and_pick: ^0.0.15
   flutter_lints: ^2.0.1
+  map_location_picker: ^1.0.1
 
 
 
