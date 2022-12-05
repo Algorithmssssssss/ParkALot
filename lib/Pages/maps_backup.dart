@@ -136,30 +136,12 @@ class _navigationPageState extends State<navigationPage> {
                   minZoom: 3.0,
                   boundsOptions: FitBoundsOptions(padding: EdgeInsets.all(1.0)),
                 ),
-                layers: [
-                  new TileLayerOptions(
+                children: [
+                  TileLayer(
                     urlTemplate:
-                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c'],
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'dev.fleaflet.flutter_map.example',
                   ),
-                  MarkerLayerOptions(
-                    markers: [
-                      new Marker(
-                          width: 45.0,
-                          height: 45.0,
-                          point: new LatLng(54.8985, 23.9036),
-                          builder: (context) => new Container(
-                                child: IconButton(
-                                  icon: Icon(Icons.location_on),
-                                  color: Colors.cyanAccent,
-                                  iconSize: 45.0,
-                                  onPressed: () {
-                                    print('Marker tapped');
-                                  },
-                                ),
-                              ))
-                    ],
-                  )
                 ],
               ),
             ),

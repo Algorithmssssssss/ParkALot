@@ -139,13 +139,13 @@ class _navigationPageState extends State<navigationPage> {
                   minZoom: 3.0,
                   boundsOptions: FitBoundsOptions(padding: EdgeInsets.all(1.0)),
                 ),
-                layers: [
-                  new TileLayerOptions(
+                children: [
+                  TileLayer(
                     urlTemplate:
-                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: ['a', 'b', 'c'],
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'dev.fleaflet.flutter_map.example',
                   ),
-                  MarkerLayerOptions(
+                  MarkerLayer(
                     markers: [
                       new Marker(
                         width: 45.0,
@@ -157,6 +157,7 @@ class _navigationPageState extends State<navigationPage> {
                             color: Color.fromARGB(255, 220, 53, 53),
                             iconSize: 45.0,
                             onPressed: () {
+                              // ignore: avoid_print
                               print('Marker tapped');
                             },
                           ),
@@ -164,7 +165,7 @@ class _navigationPageState extends State<navigationPage> {
                       ),
                     ],
                   ),
-                  PolylineLayerOptions(
+                  PolylineLayer(
                     polylines: [
                       Polyline(
                         points: [

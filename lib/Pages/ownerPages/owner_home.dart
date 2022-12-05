@@ -3,15 +3,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:latlong2/latlong.dart';
+
 import 'package:park_alot/Pages/home.dart';
 import 'package:park_alot/Pages/maps.dart';
 import 'package:park_alot/Pages/ownerPages/add_locations.dart';
 import 'package:park_alot/Pages/profile.dart';
 import 'package:park_alot/Pages/search.dart';
+import 'dart:async';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../util/my_button.dart';
 import '../notification.dart';
@@ -28,28 +30,27 @@ class ownerHomePage extends StatefulWidget {
 class _ownerHomePageState extends State<ownerHomePage> {
   final user = FirebaseAuth.instance.currentUser;
   List<String> docParkingIDs = [];
-  final controller = mapController.customLayer(
-    initMapWithUserPosition: false,
-    initPosition: LatLng(
-      47.4358055,
-      8.4737324,
-    ),
-    customTile: CustomTile(
-      sourceName: "opentopomap",
-      tileExtension: ".png",
-      minZoomLevel: 2,
-      maxZoomLevel: 19,
-      urlsServers: [
-        TileURLs(
-          url: "https://tile.opentopomap.org/",
-          subdomains: [],
-        )
-      ],
-      tileSize: 256,
-    ),
+  late GoogleMapController mapController;
+  late Marker _origin;
+  late Marker _destination;
+
+  Marker vegasMarker = Marker(
+    markerId: MarkerId('vegas'),
+    position: LatLng(36.0953103, -115.1992098),
+    infoWindow: InfoWindow(title: 'Las Vegas'),
   );
 
-  static get mapController => null;
+  Marker losAngelesMarker = Marker(
+    markerId: MarkerId('losAngeles'),
+    position: LatLng(34.0345471, -118.2643037),
+    infoWindow: InfoWindow(title: 'Los Angeles'),
+  );
+
+  final LatLng _center = const LatLng(54.8985, 23.9036);
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,47 +164,17 @@ class _ownerHomePageState extends State<ownerHomePage> {
             ),
 
             Flexible(
-              child: OSMFlutter(
-                controller: mapController,
-                trackMyPosition: false,
-                initZoom: 12,
-                minZoomLevel: 8,
-                maxZoomLevel: 14,
-                stepZoom: 1.0,
-                userLocationMarker: UserLocationMaker(
-                  personMarker: MarkerIcon(
-                    icon: Icon(
-                      Icons.location_history_rounded,
-                      color: Colors.red,
-                      size: 48,
-                    ),
-                  ),
-                  directionArrowMarker: MarkerIcon(
-                    icon: Icon(
-                      Icons.double_arrow,
-                      size: 48,
-                    ),
-                  ),
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(
+                  target: _center,
+                  zoom: 11.0,
                 ),
-                roadConfiguration: RoadConfiguration(
-                  startIcon: MarkerIcon(
-                    icon: Icon(
-                      Icons.person,
-                      size: 64,
-                      color: Colors.brown,
-                    ),
-                  ),
-                  roadColor: Colors.yellowAccent,
-                ),
-                markerOption: MarkerOption(
-                  defaultMarker: MarkerIcon(
-                    icon: Icon(
-                      Icons.person_pin_circle,
-                      color: Colors.blue,
-                      size: 56,
-                    ),
-                  ),
-                ),
+                markers: {
+                  vegasMarker,
+                  losAngelesMarker,
+                },
+                onLongPress: _addMarker,
               ),
             ),
 
@@ -254,5 +225,29 @@ class _ownerHomePageState extends State<ownerHomePage> {
         ),
       ),
     );
+  }
+
+  void _addMarker(LatLng pos) {
+    if (_origin == null || (_origin != null && _destination != null)) {
+      setState(() {
+        _origin = Marker(
+          markerId: MarkerId('origin'),
+          position: pos,
+          infoWindow: InfoWindow(title: 'Origin'),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+        );
+        _destination = null as Marker;
+      });
+    } else {
+      setState(() {
+        _destination = Marker(
+          markerId: MarkerId('destination'),
+          position: pos,
+          infoWindow: InfoWindow(title: 'Destination'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        );
+      });
+    }
   }
 }
