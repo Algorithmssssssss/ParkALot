@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:map_location_picker/map_location_picker.dart';
 import 'package:park_alot/Pages/maps.dart';
 import 'package:park_alot/Pages/ownerPages/owner_home.dart';
 
@@ -30,6 +31,8 @@ class _addLocationPageState extends State<addLocationPage> {
   final _typeController = TextEditingController();
   final _ownerNameController = TextEditingController();
   final _spotsController = TextEditingController();
+  final _gmapsIDController = TextEditingController();
+  List _testinggmaps = [];
 
   @override
   void dispose() {
@@ -38,6 +41,7 @@ class _addLocationPageState extends State<addLocationPage> {
     _typeController.dispose();
     _ownerNameController.dispose();
     _spotsController.dispose();
+    _gmapsIDController.dispose();
     super.dispose();
   }
 
@@ -61,11 +65,49 @@ class _addLocationPageState extends State<addLocationPage> {
       type,
       _ownerNameController.text.trim(),
       spots,
+      _gmapsIDController.text.trim(),
     );
   }
 
-  Future addLocationDetials(
-      String name, String location, int type, String owner, int spots) async {
+  void showPopup() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          insetPadding: EdgeInsets.all(50),
+          title: Text("Location Picker"),
+          content: Container(
+            width: 500,
+            height: 500,
+            child: MapLocationPicker(
+              apiKey: "AIzaSyBJkTw_pgCIMasJPW1FeG3cFfblLyPZ93A",
+              onNext: (GeocodingResult? result) {
+                if (result != null) {
+                  _gmapsIDController.text = result.formattedAddress ?? "";
+                  // _testinggmaps = result.geometry.location as List;
+
+                  print(_gmapsIDController.text);
+                  print(result.types);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Close"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future addLocationDetials(String name, String location, int type,
+      String owner, int spots, String gmaps_id) async {
     print(name);
     setSearchParam(name);
     await FirebaseFirestore.instance.collection('parkings').doc(name).set(
@@ -75,6 +117,7 @@ class _addLocationPageState extends State<addLocationPage> {
         'type': type,
         'ownerid': owner,
         'spots': spots,
+        'gmaps_id': gmaps_id,
         'searchIndex': setSearchParam(name),
       },
     );
@@ -338,6 +381,32 @@ class _addLocationPageState extends State<addLocationPage> {
               ),
               SizedBox(
                 height: 20,
+              ),
+
+              //location pick Button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: GestureDetector(
+                  onTap: () {
+                    showPopup();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                        color: Colors.lightBlue,
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Center(
+                      child: Text(
+                        'Pick location',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

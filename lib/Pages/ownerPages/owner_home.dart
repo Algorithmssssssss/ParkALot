@@ -1,8 +1,9 @@
-// ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_final_fields, unused_field, unnecessary_new
+// ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_final_fields, unused_field, unnecessary_new, unused_local_variable
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart' as geo;
 import 'package:google_fonts/google_fonts.dart';
 // pages imports
 import 'package:park_alot/Pages/home.dart';
@@ -11,8 +12,10 @@ import 'package:park_alot/Pages/ownerPages/add_locations.dart';
 import 'package:park_alot/Pages/profile.dart';
 import 'package:park_alot/Pages/search.dart';
 import '../../util/my_button.dart';
+import '../gmap_test.dart';
 import '../notification.dart';
 import 'get_parking_data.dart';
+import 'get_placeid.dart';
 import 'owner_list.dart';
 
 // maps imports
@@ -28,29 +31,16 @@ class ownerHomePage extends StatefulWidget {
 
 class _ownerHomePageState extends State<ownerHomePage> {
   final user = FirebaseAuth.instance.currentUser;
-  List<String> docParkingIDs = [];
+
   late GoogleMapController mapController;
   late Marker _origin;
   late Marker _destination;
 
-  final List<Marker> _markers = <Marker>[
-    Marker(
-      markerId: MarkerId('1'),
-      position: LatLng(54.898772, 23.902762),
-      infoWindow: InfoWindow(
-        title: 'My House',
-      ),
-    ),
-    Marker(
-      markerId: MarkerId('2'),
-      position: LatLng(54.8985, 23.9036),
-      infoWindow: InfoWindow(title: 'Parking 1'),
-    ),
-  ];
+  final List<Marker> _markers = <Marker>[];
 
   final LatLng _center = const LatLng(54.8985, 23.9036);
 
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
   }
 
@@ -62,6 +52,40 @@ class _ownerHomePageState extends State<ownerHomePage> {
       print("ERROR" + error.toString());
     });
     return await Geolocator.getCurrentPosition();
+  }
+
+  Future<void> _getLocationData() async {
+    List<String> placeidLists = [];
+    List<String> placeNameLists = [];
+    List placeList = [];
+    await FirebaseFirestore.instance.collection('parkings').get().then(
+          // ignore: avoid_function_literals_in_foreach_calls
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              var gmaps_id = document.data()['gmaps_id'];
+              var maps_name = document.data()['name'];
+              print(gmaps_id);
+              placeidLists.add(gmaps_id);
+              placeNameLists.add(maps_name);
+              print(placeidLists);
+            },
+          ),
+        );
+    for (var i = 0; i < placeidLists.length; i++) {
+      List<geo.Location> markerlocations =
+          await geo.locationFromAddress(placeidLists[i]);
+      print(markerlocations);
+      placeList.add(markerlocations);
+    }
+    for (var i = 0; i < placeList.length; i++) {
+      _markers.add(
+        Marker(
+          markerId: MarkerId(i.toString()),
+          position: LatLng(placeList[i][0].latitude, placeList[i][0].longitude),
+          infoWindow: InfoWindow(title: '${placeNameLists[i]}'),
+        ),
+      );
+    }
   }
 
   @override
@@ -176,27 +200,24 @@ class _ownerHomePageState extends State<ownerHomePage> {
             ),
 
             Flexible(
-              child: MapLocationPicker(
-                apiKey: "AIzaSyBJkTw_pgCIMasJPW1FeG3cFfblLyPZ93A",
-                onNext: (GeocodingResult? result) {},
-              ),
-            ),
-
-            SizedBox(
-              height: 10,
-            ),
-
-            Flexible(
-              child: GoogleMap(
-                onMapCreated: _onMapCreated,
-                myLocationButtonEnabled: true,
-                compassEnabled: true,
-                initialCameraPosition: CameraPosition(
-                  target: _center,
-                  zoom: 11.0,
-                ),
-                markers: Set<Marker>.of(_markers),
-                onLongPress: _addMarker,
+              child: FutureBuilder(
+                future: _getLocationData(),
+                builder: (context, snapshot) {
+                  return Container(
+                    height: 500,
+                    width: 500,
+                    child: GoogleMap(
+                      markers: Set<Marker>.of(_markers),
+                      onMapCreated: _onMapCreated,
+                      myLocationButtonEnabled: true,
+                      compassEnabled: true,
+                      initialCameraPosition: CameraPosition(
+                        target: _center,
+                        zoom: 11.0,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
 
@@ -225,11 +246,7 @@ class _ownerHomePageState extends State<ownerHomePage> {
                   Container(
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => navigationPage()),
-                        );
+                        _getLocationData();
                       },
                       child: MyButton(
                         iconImagePath: 'lib/icons/evAdd.png',
@@ -247,34 +264,5 @@ class _ownerHomePageState extends State<ownerHomePage> {
         ),
       ),
     );
-  }
-
-  void _addMarker(LatLng pos) {
-    if (_origin == null || (_origin != null && _destination != null)) {
-      setState(
-        () {
-          _origin = Marker(
-            markerId: MarkerId('origin'),
-            position: pos,
-            infoWindow: InfoWindow(title: 'Origin'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueGreen),
-          );
-          _destination = null as Marker;
-        },
-      );
-    } else {
-      setState(
-        () {
-          _destination = Marker(
-            markerId: MarkerId('destination'),
-            position: pos,
-            infoWindow: InfoWindow(title: 'Destination'),
-            icon:
-                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          );
-        },
-      );
-    }
   }
 }

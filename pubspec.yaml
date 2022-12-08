@@ -30,7 +30,7 @@ dependencies:
   flutter_osm_plugin: ^0.41.2
   flutter_lints: ^2.0.1
   map_location_picker: ^1.0.1
-
+  location: ^4.4.0
 
 
 

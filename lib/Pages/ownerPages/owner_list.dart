@@ -112,7 +112,7 @@ class _parkingListState extends State<parkingList> {
                         height: 50,
                         child: FittedBox(
                           child: Text(
-                            'Add Parking',
+                            'Parking Lists',
                             style: GoogleFonts.firaSans(
                                 fontSize: 40,
                                 fontWeight: FontWeight.w500,

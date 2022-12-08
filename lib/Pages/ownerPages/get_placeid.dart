@@ -1,13 +1,11 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors_in_immutables
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class getParkingData extends StatelessWidget {
+class getPlaceID extends StatelessWidget {
   final String documentId;
 
-  getParkingData({required this.documentId});
+  getPlaceID({required this.documentId});
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +22,9 @@ class getParkingData extends StatelessWidget {
 
           return Text(
             '''
-Name: ${data['name']}
-Available Spots: ${data['spots']}
 Location ID: ${data['gmaps_id']}
 ''',
-            maxLines: 3,
+            maxLines: 1,
           );
         }
         return Text('loading...');
