@@ -199,7 +199,13 @@ class _addLocationPageState extends State<addLocationPage> {
                               style: GoogleFonts.firaSans(
                                   fontSize: 40,
                                   fontWeight: FontWeight.w500,
-                                  color: Color.fromARGB(255, 109, 139, 116)),
+                                  color: Color.fromARGB(255, 38, 51, 93)),
+                              // rgb(72, 77, 106)
+                              // rgb(82, 88, 124)
+                              //rgb(108, 113, 142)
+                              //rgb(74, 82, 121)
+                              // rgb(38, 51, 93)
+                              //rgb(38, 24, 75)
                             ),
                           ),
                         ),

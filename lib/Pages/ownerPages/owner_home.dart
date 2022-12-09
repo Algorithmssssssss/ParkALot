@@ -33,8 +33,6 @@ class _ownerHomePageState extends State<ownerHomePage> {
   final user = FirebaseAuth.instance.currentUser;
 
   late GoogleMapController mapController;
-  late Marker _origin;
-  late Marker _destination;
 
   final List<Marker> _markers = <Marker>[];
 
@@ -82,7 +80,7 @@ class _ownerHomePageState extends State<ownerHomePage> {
         Marker(
           markerId: MarkerId(i.toString()),
           position: LatLng(placeList[i][0].latitude, placeList[i][0].longitude),
-          infoWindow: InfoWindow(title: '${placeNameLists[i]}'),
+          infoWindow: InfoWindow(title: placeNameLists[i]),
         ),
       );
     }
@@ -210,6 +208,7 @@ class _ownerHomePageState extends State<ownerHomePage> {
                       markers: Set<Marker>.of(_markers),
                       onMapCreated: _onMapCreated,
                       myLocationButtonEnabled: true,
+                      myLocationEnabled: true,
                       compassEnabled: true,
                       initialCameraPosition: CameraPosition(
                         target: _center,
