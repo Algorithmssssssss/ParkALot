@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_final_fields, unused_field, unnecessary_new, unused_local_variable
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,11 @@ import 'owner_list.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_location_picker/map_location_picker.dart';
 
+// ESP32 imports
+import 'package:wifi_iot/wifi_iot.dart';
+import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+
 class ownerHomePage extends StatefulWidget {
   const ownerHomePage({Key? key}) : super(key: key);
 
@@ -38,6 +45,41 @@ class _ownerHomePageState extends State<ownerHomePage> {
 
   final LatLng _center = const LatLng(54.8985, 23.9036);
 
+  late String userAgent;
+  late http.Client _inner;
+  String url = 'http://192.168.0.58:80/api';
+
+  // Set up the POST body
+  Map<String, String> body = {
+    'name': 'doodle',
+    'color': 'blue',
+  };
+
+  Future<void> adddata() async {
+    await FirebaseFirestore.instance.collection('parkings').get().then(
+          // ignore: avoid_function_literals_in_foreach_calls
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              var gmaps_id = document.data()['gmaps_id'];
+              var maps_name = document.data()['name'];
+              Map<String, String> body = {
+                'name': document.data()['name'],
+                'color': document.data()['gmaps_id'],
+              };
+              try {
+                Dio()
+                    .post('http://192.168.0.58:80/', data: body)
+                    .then((response) {
+                  print(response);
+                });
+              } catch (e) {
+                print(e);
+              }
+            },
+          ),
+        );
+  }
+
   void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
   }
@@ -50,6 +92,25 @@ class _ownerHomePageState extends State<ownerHomePage> {
       print("ERROR" + error.toString());
     });
     return await Geolocator.getCurrentPosition();
+  }
+
+  void getHttp() async {
+    try {
+      var response = await Dio().get('http://192.168.0.58:80/');
+      print(response);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _postdata() async {
+    try {
+      await Dio().post('http://192.168.0.58:80/', data: body).then((response) {
+        print(response);
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _getLocationData() async {
@@ -230,11 +291,7 @@ class _ownerHomePageState extends State<ownerHomePage> {
                   Container(
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => navigationPage()),
-                        );
+                        adddata();
                       },
                       child: MyButton(
                         iconImagePath: 'lib/icons/parkingAdd.png',
