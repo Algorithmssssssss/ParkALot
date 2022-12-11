@@ -94,10 +94,15 @@ class _ownerHomePageState extends State<ownerHomePage> {
     return await Geolocator.getCurrentPosition();
   }
 
-  void getHttp() async {
+  void sendPost(namePlace) async {
+    Map<String, String> body = {
+      'name': '$namePlace',
+      'user': '${user!.email}',
+    };
     try {
-      var response = await Dio().get('http://192.168.0.58:80/');
-      print(response);
+      Dio().post('http://192.168.0.58:80/', data: body).then((response) {
+        print(response);
+      });
     } catch (e) {
       print(e);
     }
@@ -142,6 +147,10 @@ class _ownerHomePageState extends State<ownerHomePage> {
           markerId: MarkerId(i.toString()),
           position: LatLng(placeList[i][0].latitude, placeList[i][0].longitude),
           infoWindow: InfoWindow(title: placeNameLists[i]),
+          onTap: () {
+            sendPost(placeNameLists[i]);
+            print(placeNameLists[i]);
+          },
         ),
       );
     }
