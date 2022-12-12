@@ -14,6 +14,7 @@ class gmaps_container extends StatelessWidget {
   final List<Marker> _markers = <Marker>[];
 
   final LatLng _center = const LatLng(54.8985, 23.9036);
+  int mapType = 0;
 
   late String userAgent;
   late http.Client _inner;
