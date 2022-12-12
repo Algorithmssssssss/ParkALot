@@ -3,21 +3,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:park_alot/Pages/home.dart';
 import 'package:park_alot/Pages/ownerPages/owner_home.dart';
 import 'package:park_alot/Pages/profile.dart';
 import 'package:park_alot/Pages/search.dart';
-import 'package:geocoding/geocoding.dart' as geo;
-import 'package:map_location_picker/map_location_picker.dart';
-import 'package:location/location.dart';
-
 import '../util/my_button.dart';
 import 'login_page.dart';
 import 'notification.dart';
+import 'ownerPages/gmaps_function.dart';
 
 class navigationPage extends StatefulWidget {
   const navigationPage({Key? key}) : super(key: key);
@@ -28,63 +22,6 @@ class navigationPage extends StatefulWidget {
 
 class _navigationPageState extends State<navigationPage> {
   final user = FirebaseAuth.instance.currentUser;
-  final List<Marker> _markers = <Marker>[];
-  late GoogleMapController mapController;
-  final LatLng _center = const LatLng(54.8985, 23.9036);
-
-  void _onMapCreated(GoogleMapController controller) async {
-    mapController = controller;
-  }
-
-  Future<Position> getUserCurrentLocation() async {
-    await Geolocator.requestPermission()
-        .then((value) {})
-        .onError((error, stackTrace) async {
-      await Geolocator.requestPermission();
-      print("ERROR" + error.toString());
-    });
-    return await Geolocator.getCurrentPosition();
-  }
-
-  Future<void> _getLocationData() async {
-    List<String> placeidLists = [];
-    List<String> placeNameLists = [];
-    List placeList = [];
-    await FirebaseFirestore.instance.collection('parkings').get().then(
-          // ignore: avoid_function_literals_in_foreach_calls
-          (snapshot) => snapshot.docs.forEach(
-            (document) {
-              var gmaps_id = document.data()['gmaps_id'];
-              var maps_name = document.data()['name'];
-              print(gmaps_id);
-              placeidLists.add(gmaps_id);
-              placeNameLists.add(maps_name);
-              print(placeidLists);
-            },
-          ),
-        );
-    for (var i = 0; i < placeidLists.length; i++) {
-      List<geo.Location> markerlocations =
-          await geo.locationFromAddress(placeidLists[i]);
-      print(markerlocations);
-      placeList.add(markerlocations);
-    }
-    for (var i = 0; i < placeList.length; i++) {
-      _markers.add(
-        Marker(
-          markerId: MarkerId(i.toString()),
-          position: LatLng(placeList[i][0].latitude, placeList[i][0].longitude),
-          infoWindow: InfoWindow(title: placeNameLists[i]),
-        ),
-      );
-    }
-  }
-
-  @override
-  void initState() {
-    getUserCurrentLocation();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -195,23 +132,7 @@ class _navigationPageState extends State<navigationPage> {
               height: 1,
             ),
             Flexible(
-              child: FutureBuilder(
-                future: _getLocationData(),
-                builder: (context, snapshot) {
-                  return Container(
-                    child: GoogleMap(
-                        markers: Set<Marker>.of(_markers),
-                        onMapCreated: _onMapCreated,
-                        myLocationButtonEnabled: true,
-                        compassEnabled: true,
-                        myLocationEnabled: true,
-                        initialCameraPosition: CameraPosition(
-                          target: _center,
-                          zoom: 11.0,
-                        )),
-                  );
-                },
-              ),
+              child: gmaps_container(),
             ),
           ],
         ),

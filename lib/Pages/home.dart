@@ -1,21 +1,15 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geocoding/geocoding.dart' as geo;
-import 'package:map_location_picker/map_location_picker.dart';
-
 import 'package:park_alot/Pages/maps.dart';
 import 'package:park_alot/Pages/notification.dart';
 import 'package:park_alot/Pages/profile.dart';
 import 'package:park_alot/Pages/search.dart';
 import 'package:park_alot/util/my_button.dart';
-
 import 'package:google_fonts/google_fonts.dart';
-
 import 'login_page.dart';
+import 'ownerPages/gmaps_function.dart';
 import 'ownerPages/owner_home.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,59 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   FirebaseAuth auth = FirebaseAuth.instance;
-  late GoogleMapController mapController;
-
-  final List<Marker> _markers = <Marker>[];
-
-  final LatLng _center = const LatLng(54.8985, 23.9036);
-
-  void _onMapCreated(GoogleMapController controller) async {
-    mapController = controller;
-  }
-
-  Future<Position> getUserCurrentLocation() async {
-    await Geolocator.requestPermission()
-        .then((value) {})
-        .onError((error, stackTrace) async {
-      await Geolocator.requestPermission();
-      print("ERROR" + error.toString());
-    });
-    return await Geolocator.getCurrentPosition();
-  }
-
-  Future<void> _getLocationData() async {
-    List<String> placeidLists = [];
-    List<String> placeNameLists = [];
-    List placeList = [];
-    await FirebaseFirestore.instance.collection('parkings').get().then(
-          // ignore: avoid_function_literals_in_foreach_calls
-          (snapshot) => snapshot.docs.forEach(
-            (document) {
-              var gmaps_id = document.data()['gmaps_id'];
-              var maps_name = document.data()['name'];
-              print(gmaps_id);
-              placeidLists.add(gmaps_id);
-              placeNameLists.add(maps_name);
-              print(placeidLists);
-            },
-          ),
-        );
-    for (var i = 0; i < placeidLists.length; i++) {
-      List<geo.Location> markerlocations =
-          await geo.locationFromAddress(placeidLists[i]);
-      print(markerlocations);
-      placeList.add(markerlocations);
-    }
-    for (var i = 0; i < placeList.length; i++) {
-      _markers.add(
-        Marker(
-          markerId: MarkerId(i.toString()),
-          position: LatLng(placeList[i][0].latitude, placeList[i][0].longitude),
-          infoWindow: InfoWindow(title: placeNameLists[i]),
-        ),
-      );
-    }
-  }
+  final user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -196,26 +138,7 @@ class _HomePageState extends State<HomePage> {
             ),
 
             Flexible(
-              child: FutureBuilder(
-                future: _getLocationData(),
-                builder: (context, snapshot) {
-                  return Container(
-                    height: 500,
-                    width: 500,
-                    child: GoogleMap(
-                      markers: Set<Marker>.of(_markers),
-                      onMapCreated: _onMapCreated,
-                      myLocationButtonEnabled: true,
-                      myLocationEnabled: true,
-                      compassEnabled: true,
-                      initialCameraPosition: CameraPosition(
-                        target: _center,
-                        zoom: 11.0,
-                      ),
-                    ),
-                  );
-                },
-              ),
+              child: gmaps_container(),
             ),
 
             Padding(

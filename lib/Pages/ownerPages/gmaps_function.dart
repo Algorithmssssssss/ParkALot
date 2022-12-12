@@ -92,6 +92,8 @@ class gmaps_container extends StatelessWidget {
             onMapCreated: _onMapCreated,
             myLocationButtonEnabled: true,
             myLocationEnabled: true,
+            trafficEnabled: true,
+            mapToolbarEnabled: true,
             compassEnabled: true,
             initialCameraPosition: CameraPosition(
               target: _center,
