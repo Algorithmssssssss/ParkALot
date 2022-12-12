@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+final user = FirebaseAuth.instance.currentUser;
 
 Future<void> _testingfunction(marker) async {
   List<String> placeidLists = [];
@@ -34,5 +38,19 @@ Future<void> _testingfunction(marker) async {
         infoWindow: InfoWindow(title: placeNameLists[i]),
       ),
     );
+  }
+}
+
+void sendPost(namePlace) async {
+  Map<String, String> body = {
+    'name': '$namePlace',
+    'user': '${user!.email}',
+  };
+  try {
+    Dio().post('http://192.168.0.58:80/', data: body).then((response) {
+      print(response);
+    });
+  } catch (e) {
+    print(e);
   }
 }
