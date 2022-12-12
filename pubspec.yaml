@@ -32,6 +32,13 @@ dependencies:
   map_location_picker: ^1.0.1
   location: ^4.4.0
   wifi_iot: ^0.3.18
+  flutter_launcher_icons: ^0.11.0
+
+flutter_icons:
+  android: "launcher_icon"
+  image_path: "lib/assets/logo/png/logo-color.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  
 
 
 
