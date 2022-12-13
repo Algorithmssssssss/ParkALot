@@ -8,10 +8,13 @@ import 'package:dio/dio.dart';
 
 class gmaps_container extends StatelessWidget {
   final user = FirebaseAuth.instance.currentUser;
+  CollectionReference usersDatabase =
+      FirebaseFirestore.instance.collection('users');
 
   late GoogleMapController mapController;
 
   final List<Marker> _markers = <Marker>[];
+  List<String> docIDs = [];
 
   final LatLng _center = const LatLng(54.8985, 23.9036);
   int mapType = 0;
@@ -31,9 +34,27 @@ class gmaps_container extends StatelessWidget {
   }
 
   void sendPost(namePlace) async {
+    String username = '';
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: user?.email)
+        .get()
+        .then(
+          // ignore: avoid_function_literals_in_foreach_calls
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              print(user?.uid.toString());
+              print(document.reference);
+              print(document.data()['username']);
+              username = document.data()['username'];
+
+              docIDs.add(username);
+            },
+          ),
+        );
     Map<String, String> body = {
       'name': '$namePlace',
-      'user': '${user!.email}',
+      'user': username,
     };
     try {
       Dio().post('http://192.168.0.58:80/', data: body).then((response) {
@@ -42,6 +63,27 @@ class gmaps_container extends StatelessWidget {
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<void> getDocID() async {
+    String names = '';
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: user?.email)
+        .get()
+        .then(
+          // ignore: avoid_function_literals_in_foreach_calls
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              print(user?.uid.toString());
+              print(document.reference);
+              print(document.data()['name']);
+              names = document.data()['name'];
+
+              docIDs.add(names);
+            },
+          ),
+        );
   }
 
   Future<void> _getLocationData() async {
