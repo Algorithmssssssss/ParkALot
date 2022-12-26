@@ -57,7 +57,7 @@ class gmaps_container extends StatelessWidget {
       'user': username,
     };
     try {
-      Dio().post('http://192.168.0.58:80/', data: body).then((response) {
+      Dio().post('http://192.168.147.199:80/', data: body).then((response) {
         print(response);
       });
     } catch (e) {
@@ -136,7 +136,6 @@ class gmaps_container extends StatelessWidget {
             myLocationButtonEnabled: true,
             myLocationEnabled: true,
             trafficEnabled: true,
-            mapToolbarEnabled: true,
             compassEnabled: true,
             initialCameraPosition: CameraPosition(
               target: _center,
