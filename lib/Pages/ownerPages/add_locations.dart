@@ -353,6 +353,36 @@ class _addLocationPageState extends State<addLocationPage> {
                 height: 20,
               ),
 
+              //location pick Button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: GestureDetector(
+                  onTap: () {
+                    showPopup();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                        color: Colors.lightBlue,
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Center(
+                      child: Text(
+                        'Pick location',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(
+                height: 20,
+              ),
+
               //location add Button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -385,34 +415,9 @@ class _addLocationPageState extends State<addLocationPage> {
                   ),
                 ),
               ),
+
               SizedBox(
                 height: 20,
-              ),
-
-              //location pick Button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: GestureDetector(
-                  onTap: () {
-                    showPopup();
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                        color: Colors.lightBlue,
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Center(
-                      child: Text(
-                        'Pick location',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
               ),
             ],
           ),
