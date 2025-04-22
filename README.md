@@ -5,4 +5,4 @@ ParkALot is a smart parking system with the functionality of IOT integrations.
 
 ## Purpose of the project
 
-This project was written for the university of Vilnius, Kaunas faculty for the course, Course Work.
+This project was written for the University of Vilnius, Kaunas Faculty for the course, Course Work.
