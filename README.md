@@ -1,4 +1,4 @@
-# park_alot
+# Park_Alot
 
 ParkALot flutter project with the usage of Google Firebase authentication and Google Firebase Firestore database
 ParkALot is a smart parking system with the functionality of IOT integrations.
